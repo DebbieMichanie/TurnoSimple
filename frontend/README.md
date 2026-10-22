@@ -1,0 +1,2 @@
+.env VITE_SUPABASE_URL=https://zxghywejprqkwdyaahrh.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_ygqewJHGeOm3Kp9F2uCxgQ_3LdrWeBr
