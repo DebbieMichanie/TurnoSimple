@@ -11,6 +11,8 @@ import CreateBusinessView from "../views/CreateBusinessView.vue";
 import MyBusinessesView from "../views/MyBusinessesView.vue";
 import BusinessDetailView from "../views/BusinessDetailView.vue";
 import EditBusinessView from "../views/EditBusinessView.vue";
+import EmployeesView from "../views/EmployeesView.vue";
+import ServicesView from "../views/ServicesView.vue";
 
 const routes = [
   {
@@ -64,6 +66,19 @@ const routes = [
   path: "/dashboard/business/:id/edit",
   name: "edit-business",
   component: EditBusinessView,
+  meta: { requiresAuth: true }
+},
+
+{
+  path: "/dashboard/business/:id/employees",
+  name: "business-employees",
+  component: EmployeesView,
+  meta: { requiresAuth: true }
+},
+{
+  path: "/dashboard/business/:id/services",
+  name: "business-services",
+  component: ServicesView,
   meta: { requiresAuth: true }
 }
 ];

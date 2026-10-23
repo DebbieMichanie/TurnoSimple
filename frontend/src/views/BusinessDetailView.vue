@@ -12,7 +12,8 @@ const business = ref(null);
 const loading = ref(true);
 const error = ref("");
 
-const tr = (es, en) => locale.value === "es" ? es : en;
+const tr = (es, en) =>
+  locale.value === "es" ? es : en;
 
 const categories = {
   beauty: { es: "Belleza", en: "Beauty" },
@@ -48,13 +49,12 @@ async function loadBusiness() {
         category,
         description,
         image_url,
+        image_type,
         address,
         city,
         phone,
         contact_email,
-        website, 
-        image_url, 
-        image_type
+        website
       `)
       .eq("id", route.params.id)
       .eq("owner_id", authData.user.id)
@@ -77,6 +77,7 @@ async function loadBusiness() {
 }
 
 onMounted(loadBusiness);
+
 watch(() => route.params.id, loadBusiness);
 
 function websiteHref(value) {
@@ -84,9 +85,11 @@ function websiteHref(value) {
 
   try {
     const url = new URL(value);
+
     return ["https:", "http:"].includes(url.protocol)
       ? url.href
       : null;
+
   } catch {
     return null;
   }
@@ -96,6 +99,7 @@ function phoneHref(value) {
   if (!value) return null;
 
   const cleaned = value.replace(/[^\d+]/g, "");
+
   return /^\+?\d{8,15}$/.test(cleaned)
     ? `tel:${cleaned}`
     : null;
@@ -105,12 +109,20 @@ function phoneHref(value) {
 <template>
   <main class="container py-5">
 
+    <!-- BACK BUTTON -->
     <RouterLink
       to="/dashboard/businesses"
       class="btn btn-outline-brand mb-4"
     >
-      <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>
-      {{ tr("Volver a mis negocios", "Back to my businesses") }}
+      <i
+        class="bi bi-arrow-left me-2"
+        aria-hidden="true"
+      ></i>
+
+      {{ tr(
+        "Volver a mis negocios",
+        "Back to my businesses"
+      ) }}
     </RouterLink>
 
     <!-- LOADING -->
@@ -124,7 +136,13 @@ function phoneHref(value) {
         class="spinner-border text-info mb-3"
         aria-hidden="true"
       ></div>
-      <p>{{ tr("Cargando negocio...", "Loading business...") }}</p>
+
+      <p>
+        {{ tr(
+          "Cargando negocio...",
+          "Loading business..."
+        ) }}
+      </p>
     </div>
 
     <!-- ERROR -->
@@ -150,36 +168,40 @@ function phoneHref(value) {
       class="card border-0 shadow-sm business-detail"
     >
 
-      <!-- IMAGE -->
-     
-<div
-  v-if="business.image_url"
-  class="detail-image-container"
-  :class="{ 'detail-cover-container': business.image_type === 'cover' }"
->
-  <img
-    :src="business.image_url"
-    :alt="locale === 'es'
-      ? `Imagen de ${business.name}`
-      : `Image of ${business.name}`"
-    class="detail-image"
-    :class="business.image_type === 'cover'
-      ? 'detail-image-cover'
-      : 'detail-image-logo'"
-  />
-</div>
+      <!-- BUSINESS IMAGE -->
+      <div
+        v-if="business.image_url"
+        class="detail-image-container"
+        :class="{
+          'detail-cover-container':
+            business.image_type === 'cover'
+        }"
+      >
+        <img
+          :src="business.image_url"
+          :alt="tr(
+            `Imagen de ${business.name}`,
+            `Image of ${business.name}`
+          )"
+          class="detail-image"
+          :class="business.image_type === 'cover'
+            ? 'detail-image-cover'
+            : 'detail-image-logo'"
+        />
+      </div>
 
-          v-else
-          class="detail-image-placeholder"
-          aria-hidden="true"
-        >
-          <i class="bi bi-shop"></i>
-        </div>
-
-     
+      <!-- PLACEHOLDER IF NO IMAGE -->
+      <div
+        v-else
+        class="detail-image-placeholder"
+        aria-hidden="true"
+      >
+        <i class="bi bi-shop"></i>
+      </div>
 
       <div class="card-body p-4 p-md-5">
 
+        <!-- BUSINESS HEADER -->
         <div
           class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4"
         >
@@ -193,27 +215,78 @@ function phoneHref(value) {
             </span>
           </div>
 
-          <RouterLink
-            :to="`/dashboard/business/${business.id}/edit`"
-            class="btn btn-outline-brand"
-          >
-            <i
-              class="bi bi-pencil-square me-2"
-              aria-hidden="true"
-            ></i>
-            {{ tr("Editar negocio", "Edit business") }}
-          </RouterLink>
+          <!-- ACTION BUTTONS -->
+          <div class="d-flex flex-wrap gap-2">
+
+            <RouterLink
+              :to="`/dashboard/business/${business.id}/edit`"
+              class="btn btn-outline-brand"
+            >
+              <i
+                class="bi bi-pencil-square me-2"
+                aria-hidden="true"
+              ></i>
+
+              {{ tr(
+                "Editar negocio",
+                "Edit business"
+              ) }}
+            </RouterLink>
+
+            <RouterLink
+              :to="`/dashboard/business/${business.id}/employees`"
+              class="btn btn-brand"
+            >
+              <i
+                class="bi bi-people me-2"
+                aria-hidden="true"
+              ></i>
+
+              {{ tr(
+                "Administrar empleados",
+                "Manage employees"
+              ) }}
+            </RouterLink>
+            
+<RouterLink
+  :to="`/dashboard/business/${business.id}/services`"
+  class="btn btn-brand"
+>
+  <i
+    class="bi bi-card-checklist me-2"
+    aria-hidden="true"
+  ></i>
+
+  {{ tr(
+    "Administrar servicios",
+    "Manage services"
+  ) }}
+</RouterLink>
+
+          </div>
         </div>
 
         <!-- DESCRIPTION -->
-        <section class="mb-4" aria-labelledby="descriptionTitle">
-          <h2 id="descriptionTitle" class="h5 fw-bold mb-3">
-            {{ tr("Sobre el negocio", "About the business") }}
+        <section
+          class="mb-4"
+          aria-labelledby="descriptionTitle"
+        >
+          <h2
+            id="descriptionTitle"
+            class="h5 fw-bold mb-3"
+          >
+            {{ tr(
+              "Sobre el negocio",
+              "About the business"
+            ) }}
           </h2>
 
           <p class="text-secondary">
             {{ business.description ||
-              tr("Sin descripción.", "No description.") }}
+              tr(
+                "Sin descripción.",
+                "No description."
+              ) }}
           </p>
         </section>
 
@@ -225,29 +298,58 @@ function phoneHref(value) {
           class="my-4"
           aria-labelledby="locationTitle"
         >
-          <h2 id="locationTitle" class="h5 fw-bold mb-3">
-            <i class="bi bi-geo-alt me-2" aria-hidden="true"></i>
+          <h2
+            id="locationTitle"
+            class="h5 fw-bold mb-3"
+          >
+            <i
+              class="bi bi-geo-alt me-2"
+              aria-hidden="true"
+            ></i>
+
             {{ tr("Ubicación", "Location") }}
           </h2>
 
-          <p v-if="business.address" class="mb-2">
+          <p
+            v-if="business.address"
+            class="mb-2"
+          >
             {{ business.address }}
           </p>
 
-          <p v-if="business.city" class="text-secondary">
+          <p
+            v-if="business.city"
+            class="text-secondary"
+          >
             {{ business.city }}
           </p>
         </section>
 
         <!-- CONTACT -->
-        <section class="my-4" aria-labelledby="contactTitle">
-          <h2 id="contactTitle" class="h5 fw-bold mb-3">
-            <i class="bi bi-telephone me-2" aria-hidden="true"></i>
+        <section
+          class="my-4"
+          aria-labelledby="contactTitle"
+        >
+          <h2
+            id="contactTitle"
+            class="h5 fw-bold mb-3"
+          >
+            <i
+              class="bi bi-telephone me-2"
+              aria-hidden="true"
+            ></i>
+
             {{ tr("Contacto", "Contact") }}
           </h2>
 
-          <div v-if="business.phone" class="mb-3">
-            <strong>{{ tr("Teléfono:", "Phone:") }}</strong>
+          <!-- PHONE -->
+          <div
+            v-if="business.phone"
+            class="mb-3"
+          >
+            <strong>
+              {{ tr("Teléfono:", "Phone:") }}
+            </strong>
 
             <a
               v-if="phoneHref(business.phone)"
@@ -257,12 +359,19 @@ function phoneHref(value) {
               {{ business.phone }}
             </a>
 
-            <span v-else class="ms-2">
+            <span
+              v-else
+              class="ms-2"
+            >
               {{ business.phone }}
             </span>
           </div>
 
-          <div v-if="business.contact_email" class="mb-3">
+          <!-- EMAIL -->
+          <div
+            v-if="business.contact_email"
+            class="mb-3"
+          >
             <strong>Email:</strong>
 
             <a
@@ -273,9 +382,16 @@ function phoneHref(value) {
             </a>
           </div>
 
-          <div v-if="websiteHref(business.website)" class="mb-3">
+          <!-- WEBSITE -->
+          <div
+            v-if="websiteHref(business.website)"
+            class="mb-3"
+          >
             <strong>
-              {{ tr("Sitio web:", "Website:") }}
+              {{ tr(
+                "Sitio web:",
+                "Website:"
+              ) }}
             </strong>
 
             <a
@@ -289,6 +405,7 @@ function phoneHref(value) {
               )"
             >
               {{ business.website }}
+
               <i
                 class="bi bi-box-arrow-up-right ms-1"
                 aria-hidden="true"
@@ -296,10 +413,13 @@ function phoneHref(value) {
             </a>
           </div>
 
+          <!-- EMPTY CONTACT -->
           <p
-            v-if="!business.phone &&
-                  !business.contact_email &&
-                  !business.website"
+            v-if="
+              !business.phone &&
+              !business.contact_email &&
+              !business.website
+            "
             class="text-secondary"
           >
             {{ tr(
@@ -312,10 +432,23 @@ function phoneHref(value) {
         <hr />
 
         <!-- BOOKING LINK -->
-        <section class="my-4" aria-labelledby="bookingTitle">
-          <h2 id="bookingTitle" class="h5 fw-bold mb-3">
-            <i class="bi bi-calendar-check me-2" aria-hidden="true"></i>
-            {{ tr("Enlace de reservas", "Booking link") }}
+        <section
+          class="my-4"
+          aria-labelledby="bookingTitle"
+        >
+          <h2
+            id="bookingTitle"
+            class="h5 fw-bold mb-3"
+          >
+            <i
+              class="bi bi-calendar-check me-2"
+              aria-hidden="true"
+            ></i>
+
+            {{ tr(
+              "Enlace de reservas",
+              "Booking link"
+            ) }}
           </h2>
 
           <p class="text-secondary mb-2">
@@ -331,15 +464,18 @@ function phoneHref(value) {
         </section>
 
         <!-- COMING SOON -->
-        <div class="alert alert-info mt-4 mb-0" role="status">
+        <div
+          class="alert alert-info mt-4 mb-0"
+          role="status"
+        >
           <i
             class="bi bi-info-circle me-2"
             aria-hidden="true"
           ></i>
 
           {{ tr(
-            "Próximamente vas a poder administrar empleados, servicios, horarios y reservas desde esta página.",
-            "Soon you'll be able to manage employees, services, schedules and bookings here."
+            "Próximamente vas a poder configurar servicios, horarios individuales y reservas desde esta página.",
+            "Soon you'll be able to configure services, individual schedules and bookings from this page."
           ) }}
         </div>
 
@@ -355,7 +491,7 @@ function phoneHref(value) {
   border-radius: 18px;
 }
 
-
+/* IMAGE CONTAINER */
 .detail-image-container {
   width: 100%;
   height: 220px;
@@ -367,6 +503,7 @@ function phoneHref(value) {
   overflow: hidden;
 }
 
+/* GENERAL IMAGE */
 .detail-image {
   width: 100%;
   height: 100%;
@@ -374,16 +511,33 @@ function phoneHref(value) {
   display: block;
 }
 
+/* LOGO */
+.detail-image-logo {
+  object-fit: contain;
+}
 
+/* COVER */
+.detail-image-cover {
+  object-fit: cover;
+}
+
+/* COVER CONTAINER */
+.detail-cover-container {
+  padding: 0;
+}
+
+/* PLACEHOLDER */
 .detail-image-placeholder {
-  height: 100%;
+  height: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #e8f8f7;
   color: var(--ts-primary-hover, #329d9d);
-  font-size: 64px;
+  font-size: 52px;
 }
 
+/* BOOKING LINK */
 .booking-link {
   background: #f5f9f9;
   border: 1px solid #e1eeee;
@@ -395,23 +549,14 @@ function phoneHref(value) {
   color: #268c8c;
 }
 
-
-.detail-image-logo {
-  object-fit: contain;
-}
-
-.detail-image-cover {
-  object-fit: cover;
-}
-
-.detail-cover-container {
-  padding: 0;
-}
-
+/* RESPONSIVE */
 @media (max-width: 576px) {
   .detail-image-container {
     height: 200px;
   }
-}
 
+  .detail-image-placeholder {
+    height: 150px;
+  }
+}
 </style>

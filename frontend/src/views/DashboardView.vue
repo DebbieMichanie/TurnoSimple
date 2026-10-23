@@ -69,68 +69,7 @@ async function logout() {
     : "Create my business" }}
 </RouterLink>
 
-
-      <button
-        class="btn btn-outline-danger align-self-start"
-        @click="showLogoutModal = true"
-      >
-        <i class="bi bi-box-arrow-right me-2"></i>
-        {{ locale === "es" ? "Cerrar sesión" : "Log out" }}
-      </button>
-    </div>
-
-    <div
-      v-if="showLogoutModal"
-      class="modal-backdrop-custom"
-      @click.self="showLogoutModal = false"
-    >
-      <div
-        class="card shadow-lg p-4 logout-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="logoutTitle"
-      >
-        <div class="text-center mb-3">
-          <i class="bi bi-box-arrow-right fs-1 text-danger"></i>
-        </div>
-
-        <h4 id="logoutTitle" class="fw-bold text-center">
-          {{ locale === "es"
-            ? "¿Cerrar sesión?"
-            : "Log out?" }}
-        </h4>
-
-        <p class="text-secondary text-center">
-          {{ locale === "es"
-            ? "¿Estás seguro de que querés cerrar tu sesión?"
-            : "Are you sure you want to log out?" }}
-        </p>
-
-        <div v-if="error" class="alert alert-danger">
-          {{ error }}
-        </div>
-
-        <div class="d-flex justify-content-center gap-2 mt-3">
-          <button
-            class="btn btn-outline-brand"
-            :disabled="loading"
-            @click="showLogoutModal = false"
-          >
-            {{ locale === "es" ? "Cancelar" : "Cancel" }}
-          </button>
-
-          <button
-            class="btn btn-brand"
-            :disabled="loading"
-            @click="logout"
-          >
-            {{ loading
-              ? (locale === "es" ? "Saliendo..." : "Logging out...")
-              : (locale === "es" ? "Cerrar sesión" : "Log out") }}
-          </button>
-        </div>
       </div>
-    </div>
   </main>
 </template>
 
